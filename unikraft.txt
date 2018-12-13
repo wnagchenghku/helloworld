@@ -2,5 +2,5 @@
 2. libs/newlib on staging branch, add #include <errno.h> in time.c
 3.1 apps/helloworld/Makefile add LIBS := $(UK_LIBS)/newlib
 3.2 make menuconfig "Library Configuration" choose libnewlib and vfscore
-4. cd NNPACK; mkdir build; cd build; cmake .. -DNNPACK_BACKEND="psimd" -DNNPACK_INFERENCE_ONLY=ON
+4. cd NNPACK; mkdir build; cd build; cmake .. -DNNPACK_BACKEND="scalar" -DNNPACK_INFERENCE_ONLY=ON
 5. cd apps/helloworld make
