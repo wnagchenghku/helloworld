@@ -14,11 +14,11 @@
 #include <nnpack/softmax.h>
 
 struct hardware_info nnp_hwinfo = { };
-static pthread_once_t hwinfo_init_control = PTHREAD_ONCE_INIT;
+// static pthread_once_t hwinfo_init_control = PTHREAD_ONCE_INIT;
 
 
 #if (CPUINFO_ARCH_X86 || CPUINFO_ARCH_X86_64) && !defined(__ANDROID__)
-/*	static void init_x86_hwinfo(void) {
+	/*static void init_x86_hwinfo(void) {
 		const struct cpuinfo_cache* l1d = cpuinfo_get_l1d_cache(0);
 		if (l1d != NULL) {
 			nnp_hwinfo.cache.l1 = (struct cache_info) {
@@ -66,6 +66,35 @@ static pthread_once_t hwinfo_init_control = PTHREAD_ONCE_INIT;
 			return (((uint64_t) hi) << 32) | (uint64_t) lo;
 		}
 	#endif
+
+	#define bit_FMA         (1 << 12)
+	#define bit_OSXSAVE     (1 << 27)
+	#define bit_AVX         (1 << 28)
+	#define bit_AVX2        (1 << 5)
+
+	#define __cpuid(level, a, b, c, d)			\
+	  __asm__ ("cpuid\n\t"					\
+		   : "=a" (a), "=b" (b), "=c" (c), "=d" (d)	\
+		   : "0" (level))
+
+	#define __cpuid_count(level, count, a, b, c, d)		\
+	  __asm__ ("cpuid\n\t"					\
+		   : "=a" (a), "=b" (b), "=c" (c), "=d" (d)	\
+		   : "0" (level), "2" (count))
+
+	static __inline unsigned int
+	__get_cpuid_max (unsigned int __ext, unsigned int *__sig)
+	{
+	  unsigned int __eax, __ebx, __ecx, __edx;
+
+	  /* Host supports cpuid.  Return highest supported cpuid input value.  */
+	  __cpuid (__ext, __eax, __ebx, __ecx, __edx);
+
+	  if (__sig)
+	    *__sig = __ebx;
+
+	  return __eax;
+	}
 
 	struct cpu_info {
 		uint32_t eax;
@@ -775,10 +804,11 @@ static void init_hwinfo(void) {
 }
 
 enum nnp_status nnp_initialize(void) {
-	if (!cpuinfo_initialize()) {
+	/*if (!cpuinfo_initialize()) {
 		return nnp_status_out_of_memory;
 	}
-	pthread_once(&hwinfo_init_control, &init_hwinfo);
+	pthread_once(&hwinfo_init_control, &init_hwinfo);*/
+	init_hwinfo();
 	if (nnp_hwinfo.supported) {
 		return nnp_status_success;
 	} else {
@@ -787,6 +817,6 @@ enum nnp_status nnp_initialize(void) {
 }
 
 enum nnp_status nnp_deinitialize(void) {
-	cpuinfo_deinitialize();
+	// cpuinfo_deinitialize();
 	return nnp_status_success;
 }

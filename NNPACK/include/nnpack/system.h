@@ -32,7 +32,7 @@ inline static double read_timer() {
 #elif defined(EMSCRIPTEN)
 	return emscripten_get_now() * 1.0e-3;
 #else
-	#error No implementation available
+	// #error No implementation available
 #endif
 }
 
