@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <nnpack.h>
 
 /* Import user configuration: */
 #include <uk/config.h>
