@@ -134,9 +134,6 @@ struct options {
 	struct nnp_size output_subsampling;
 	enum nnp_convolution_algorithm algorithm;
 	enum nnp_convolution_transform_strategy transform_strategy;
-	size_t threads;
-	size_t iterations;
-	bool threadpool;
 };
 
 static void print_options_help(const char* program_name) {
@@ -152,9 +149,7 @@ static void print_options_help(const char* program_name) {
 "  -ts  --transform-strategy The transformation strategy (compute, or precompute) for kernel transformation (default: compute)\n"
 "  -b   --batch              The size of a minibatch (default: 1)\n"
 "  -s   --output-subsampling The size of a output subsampling region, AKA stride (default: 1x1)\n"
-"  -ip  --input-padding      Implicit input padding (default: 0)\n"
-"  -t   --threads            The number of threads (default: all; 0 to disable threadpool)\n"
-"  -i   --iterations         # iterations (default: 3)\n",
+"  -ip  --input-padding      Implicit input padding (default: 0)\n",
 		program_name);
 }
 
@@ -169,9 +164,6 @@ static struct options parse_options(int argc, char** argv) {
 		.output_subsampling = { 1, 1 },
 		.algorithm = nnp_convolution_algorithm_auto,
 		.transform_strategy = nnp_convolution_transform_strategy_compute,
-		.threads = 0,
-		.iterations = 3,
-		.threadpool = true,
 	};
 
 	return options;
