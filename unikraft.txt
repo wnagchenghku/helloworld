@@ -4,3 +4,4 @@
 3.2 make menuconfig "Library Configuration" choose libnewlib and vfscore
 4. cd NNPACK; mkdir build; cd build; cmake .. -DNNPACK_BACKEND="scalar" -DNNPACK_INFERENCE_ONLY=ON
 5. cd apps/helloworld make
+6. qemu-system-x86_64 -cpu SandyBridge,+avx -nographic -enable-kvm -m 4 -device isa-debug-exit -vga none -kernel build/helloworld_kvm-x86_64
