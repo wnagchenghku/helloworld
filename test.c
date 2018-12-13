@@ -95,7 +95,7 @@ void benchmark_convolution(
 			break;
 		case nnp_status_invalid_algorithm:
 		case nnp_status_unsupported_algorithm:
-			return (struct nnp_profile) { nanf("") };
+			return;
 			break;
 		default:
 			fprintf(stderr, "Error: failed to detect workspace memory size: status %d\n", status);
@@ -117,7 +117,7 @@ void benchmark_convolution(
 		memory_block, memory_size == 0 ? NULL : &memory_size,
 		nnp_activation_identity, NULL,
 		threadpool,
-		&computation_profile[iteration]);
+		NULL);
 
 	free(memory_block);
 
@@ -125,7 +125,6 @@ void benchmark_convolution(
 }
 
 struct options {
-	enum mode mode;
 	size_t batch_size;
 	size_t input_channels;
 	size_t output_channels;
@@ -149,7 +148,6 @@ static void print_options_help(const char* program_name) {
 "  -is  --input-size         Input height and width\n"
 "  -ks  --kernel-size        Kernel height and width\n"
 "Optional parameters:\n"
-"  -m   --mode               The convolution mode (output, inference, input-gradient, kernel-gradient)\n"
 "  -a   --algorithm          The algorithm (auto, ft8x8, ft16x16, wt8x8, implicit-gemm, or direct) for computing convolution (default: auto)\n"
 "  -ts  --transform-strategy The transformation strategy (compute, or precompute) for kernel transformation (default: compute)\n"
 "  -b   --batch              The size of a minibatch (default: 1)\n"
@@ -162,7 +160,6 @@ static void print_options_help(const char* program_name) {
 
 static struct options parse_options(int argc, char** argv) {
 	struct options options = {
-		.mode = mode_inference,
 		.batch_size = 1,
 		.input_channels = 0,
 		.output_channels = 0,
@@ -230,14 +227,13 @@ int main(int argc, char** argv) {
 
 	pthreadpool_t threadpool = NULL;
 
-	const struct nnp_profile convolution_profile =
-		benchmark_convolution(
-			options.algorithm,
-			options.transform_strategy,
-			batch_size, input_channels, output_channels,
-			input_size, input_padding, kernel_size, output_subsampling,
-			input, kernel, bias, output,
-			threadpool);
+	benchmark_convolution(
+		options.algorithm,
+		options.transform_strategy,
+		batch_size, input_channels, output_channels,
+		input_size, input_padding, kernel_size, output_subsampling,
+		input, kernel, bias, output,
+		threadpool);
 
 	return EXIT_SUCCESS;
 }
